@@ -3,6 +3,7 @@ package com.demo;
 import com.demo.dto.UserDemo1DTO;
 import com.demo.dto.UserDemo2DTO;
 import com.demo.dto.UserDemo3DTO;
+import com.demo.dto.UserDemo8DTO;
 import com.demo.model.User;
 import com.demo.repository.UserRepository;
 import org.junit.Test;
@@ -145,5 +146,12 @@ public class DemoApplicationTests {
 		users.add(user);
 		users.add(user1);
 		userRepository.bulkSave(users);
+	}
+
+	//求出平均年龄,以及年龄的总和
+	@Test
+	public void demo8(){
+		UserDemo8DTO userDemo8DTO = userRepository.avgAndTotalAge();
+		System.out.println(userDemo8DTO);
 	}
 }
