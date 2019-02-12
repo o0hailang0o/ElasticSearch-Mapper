@@ -1,6 +1,6 @@
 package com.demo.elasticsearch.annotations;
 
-import com.demo.elasticsearch.model.Fun;
+import com.demo.elasticsearch.enums.Fun;
 
 import java.lang.annotation.*;
 

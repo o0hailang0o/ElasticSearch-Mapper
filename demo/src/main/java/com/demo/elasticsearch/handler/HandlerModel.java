@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.demo.elasticsearch.annotations.Function;
 import com.demo.elasticsearch.annotations.Group;
+import com.demo.elasticsearch.enums.Fun;
 import com.demo.elasticsearch.model.*;
 import org.springframework.util.StringUtils;
 

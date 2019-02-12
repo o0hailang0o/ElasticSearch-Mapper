@@ -22,12 +22,14 @@ public class ConditionString {
 
     private String getConditionFilter(){
         String filter ="";
-        Set<Condition> conditions =  model.getConditions();
-        if(model!=null&&!CollectionUtils.isEmpty(conditions)){
-            for(Condition condition : conditions){
-                String field = condition.getField();
-                if(model.getParams()!=null && !StringUtils.isEmpty(model.getParams().get(field))){
-                    filter+=getFilter(condition);
+        if(model!=null) {
+            Set<Condition> conditions = model.getConditions();
+            if (!CollectionUtils.isEmpty(conditions)) {
+                for (Condition condition : conditions) {
+                    String field = condition.getField();
+                    if (model.getParams() != null && !StringUtils.isEmpty(model.getParams().get(field))) {
+                        filter += getFilter(condition);
+                    }
                 }
             }
         }
@@ -283,6 +285,5 @@ public class ConditionString {
         conditions.add(condition1);
         aggsGroup.setValues(conditions);
         ConditionString conditionString = new ConditionString(model);
-        System.out.println(conditionString.getAggsString(0));
     }
 }

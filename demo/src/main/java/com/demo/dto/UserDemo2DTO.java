@@ -1,9 +1,7 @@
 package com.demo.dto;
 
-import com.demo.elasticsearch.annotations.Function;
 import com.demo.elasticsearch.annotations.Group;
 import com.demo.elasticsearch.annotations.Result;
-import com.demo.elasticsearch.model.Fun;
 
 /**
  * @author liujian on 2019/1/31.

@@ -1,4 +1,4 @@
-package com.demo.elasticsearch.model;
+package com.demo.elasticsearch.enums;
 
 /**
  * @author liujian on 2019/1/28.

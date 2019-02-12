@@ -7,7 +7,6 @@ import com.demo.elasticsearch.annotations.Function;
 import com.demo.elasticsearch.annotations.Group;
 import com.demo.elasticsearch.annotations.Id;
 import com.demo.elasticsearch.annotations.Result;
-import com.demo.elasticsearch.exceptions.FunNullException;
 import com.demo.elasticsearch.model.BeanHump;
 import com.demo.elasticsearch.model.PageResult;
 import org.springframework.util.CollectionUtils;
@@ -38,35 +37,47 @@ public class HandlerResult {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if(field.isAnnotationPresent(Id.class)){
-                jsonObject.put(field.getName(),jsonObject.get("_id"));
-                jsonObject.remove("_id");
-            }
-            if(field.isAnnotationPresent(Group.class)){
-                Group group = field.getAnnotation(Group.class);
-                String fieldName = field.getName();
-                if(!StringUtils.isEmpty(group.field())){
-                    fieldName = group.field();
-                }
-                String key = "group_"+fieldName+"_value";
-                jsonObject.put(field.getName(),jsonObject.get(BeanHump.underlineToCamel2(key)));
-                jsonObject.remove(BeanHump.underlineToCamel2(key));
+                handlerId(field,jsonObject);
+            } else if(field.isAnnotationPresent(Group.class)){
+                handlerGroup(field,jsonObject);
             }else if(field.isAnnotationPresent(Function.class)){
-                Function function = field.getAnnotation(Function.class);
-                String fieldName = field.getName();
-                if(!StringUtils.isEmpty(function.field())){
-                    fieldName = function.field();
-                }
-                if(function.value() == null){
-                    throw new FunNullException("Function annotation must have value");
-                }
-                String key = function.value()+"_"+fieldName;
-                jsonObject.put(field.getName(),jsonObject.get(BeanHump.underlineToCamel2(key)));
-                jsonObject.remove(BeanHump.underlineToCamel2(BeanHump.underlineToCamel2(key)));
+                handlerFunction(field,jsonObject);
             } else if(field.isAnnotationPresent(Result.class)){
-                Result result = field.getAnnotation(Result.class);
-                jsonObject.put(field.getName(),jsonObject.get(result.value()));
-                jsonObject.remove(result.value());
+                handlerResult(field,jsonObject);
             }
         }
+    }
+
+    private static void handlerId(Field field,JSONObject jsonObject){
+        jsonObject.put(field.getName(),jsonObject.get("_id"));
+        jsonObject.remove("_id");
+    }
+
+    private static void handlerGroup(Field field,JSONObject jsonObject){
+        Group group = field.getAnnotation(Group.class);
+        String fieldName = field.getName();
+        if(!StringUtils.isEmpty(group.field())){
+            fieldName = group.field();
+        }
+        String key = "group_"+fieldName+"_value";
+        jsonObject.put(field.getName(),jsonObject.get(BeanHump.underlineToCamel2(key)));
+        jsonObject.remove(BeanHump.underlineToCamel2(key));
+    }
+
+    private static void handlerFunction(Field field,JSONObject jsonObject){
+        Function function = field.getAnnotation(Function.class);
+        String fieldName = field.getName();
+        if(!StringUtils.isEmpty(function.field())){
+            fieldName = function.field();
+        }
+        String key = function.value()+"_"+fieldName;
+        jsonObject.put(field.getName(),jsonObject.get(BeanHump.underlineToCamel2(key)));
+        jsonObject.remove(BeanHump.underlineToCamel2(BeanHump.underlineToCamel2(key)));
+    }
+
+    private static void handlerResult(Field field,JSONObject jsonObject){
+        Result result = field.getAnnotation(Result.class);
+        jsonObject.put(field.getName(),jsonObject.get(result.value()));
+        jsonObject.remove(result.value());
     }
 }

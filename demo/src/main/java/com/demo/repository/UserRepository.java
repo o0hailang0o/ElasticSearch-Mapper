@@ -3,6 +3,7 @@ package com.demo.repository;
 import com.demo.dto.UserDemo1DTO;
 import com.demo.dto.UserDemo2DTO;
 import com.demo.dto.UserDemo3DTO;
+import com.demo.dto.UserDemo8DTO;
 import com.demo.elasticsearch.annotations.EsMapper;
 import com.demo.elasticsearch.repository.ElasticSearchRepository;
 import com.demo.model.User;
@@ -32,4 +33,10 @@ public interface UserRepository extends ElasticSearchRepository<User>{
      * @return
      */
     List<UserDemo3DTO> avgAgeGroupBySex();
+
+    /**
+     * 计算出平均年龄以及年龄总和
+     * @return
+     */
+    UserDemo8DTO avgAndTotalAge();
 }
