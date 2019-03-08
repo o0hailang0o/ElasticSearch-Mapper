@@ -2,6 +2,7 @@ package com.demo.dto;
 
 import com.demo.elasticsearch.annotations.Condition;
 import com.demo.elasticsearch.annotations.Document;
+import com.demo.elasticsearch.annotations.Sort;
 
 /**
  * @author liujian on 2019/1/30.
@@ -9,6 +10,7 @@ import com.demo.elasticsearch.annotations.Document;
 public class UserDemo1DTO {
 
     @Condition(value=">")
+    @Sort(order = "desc")
     private Integer age;
 
     private Integer sex;

@@ -8,10 +8,7 @@ import com.demo.elasticsearch.methods.BulkSave;
 import com.demo.elasticsearch.methods.FindAll;
 import com.demo.elasticsearch.methods.FindOne;
 import com.demo.elasticsearch.methods.Save;
-import com.demo.elasticsearch.model.AggsGroup;
-import com.demo.elasticsearch.model.Model;
-import com.demo.elasticsearch.model.PageResult;
-import com.demo.elasticsearch.model.Search;
+import com.demo.elasticsearch.model.*;
 import com.demo.elasticsearch.repository.ElasticSearchBaseRepository;
 import com.demo.elasticsearch.start.EsUtils;
 import org.springframework.util.CollectionUtils;
@@ -97,6 +94,9 @@ public class ElasticRepositoryProxy<T> implements InvocationHandler {
     private List<?> getResult( Class<?> resultClass, Model model){
         AggsGroup aggsGroup = HandlerModel.getAggsGroup(resultClass);
         model.setAggs(aggsGroup);
+        //深度排序问题
+        Sort sort = HandlerModel.getDeepSort(resultClass);
+        model.setSort(sort);
         PageResult pageResult = search.search(model);
         return HandlerResult.resultMap(pageResult,resultClass);
     }

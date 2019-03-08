@@ -22,13 +22,13 @@ public class ConditionString {
 
     private String getConditionFilter(){
         String filter ="";
-        if(model!=null) {
-            Set<Condition> conditions = model.getConditions();
-            if (!CollectionUtils.isEmpty(conditions)) {
-                for (Condition condition : conditions) {
+        if(model!=null){
+            Set<Condition> conditions =  model.getConditions();
+            if(!CollectionUtils.isEmpty(conditions)){
+                for(Condition condition : conditions){
                     String field = condition.getField();
-                    if (model.getParams() != null && !StringUtils.isEmpty(model.getParams().get(field))) {
-                        filter += getFilter(condition);
+                    if(model.getParams()!=null && StringUtils.isEmpty(model.getParams().get(field))){
+                        filter+=getFilter(condition);
                     }
                 }
             }
@@ -96,13 +96,15 @@ public class ConditionString {
         dsl+=  "      ]\n" +
                 "    }\n" +
                 "  }\n";
+        if(model.getSort()!=null&&(model.getSort().getStatus()==null||model.getSort().getStatus().equals(0))){
+            dsl+=easySort(model.getSort());
+        }
         dsl+=aggs;
         dsl+= "}";
         return dsl;
     }
 
     private String getConditionAggs() {
-        String aggs = "";
         //-1注意啦 这是要求 父级必须group形式 最后一个聚合 才是所要求的最大值 最小值 数量 详情等等
         return getAggsString(0);
     }
@@ -118,8 +120,13 @@ public class ConditionString {
                     "        \"terms\": {\n" +
                     "          \"field\": \""+groups.get(i)+"\",\n" +
                     "          \"execution_hint\": \"map\",\n"+
-                    "          \"size\": 10000\n" +
-                    "       }\n" ;
+                    "          \"size\": 10000\n";
+                    if(i==groups.size()-1){
+                        if(model.getSort()!=null&&model.getSort().getStatus().equals(1)){
+                            aggs+=deepSort(model.getSort());
+                        }
+                    }
+                aggs+= "       }\n" ;
             if(i<groups.size()-1){
                 aggs+=getAggsString(i+1);
             }
@@ -217,31 +224,6 @@ public class ConditionString {
                 "  }";
     }
 
-    private String boolShouldTerm(String field,String[] value){
-        String str =  ",{\n" +
-                "          \"bool\": {\n" +
-                "            \"should\": [\n";
-        if(value!=null && value.length!=0){
-            for(int i=0;i<value.length;i++ ){
-                if(i!=0){
-                    str+=",";
-                }
-                str+=   "              {\n" +
-                        "                \"term\": {\n" +
-                        "                  \""+field+"\": {\n" +
-                        "                    \"value\": \""+value[i]+"\"\n" +
-                        "                  }\n" +
-                        "                }\n" +
-                        "              }";
-            }
-            str+="    ]\n " +
-                    "}\n" +
-                    "}";
-        }else {
-            return "";
-        }
-        return str;
-    }
 
     private String boolMustNotString(String field,String value){
         return " ,\"bool\": {\n" +
@@ -262,6 +244,22 @@ public class ConditionString {
                 "         }\n" +
                 "       }\n" +
                 "   }      ";
+    }
+
+    private String easySort(Sort sort){
+        return ",\"sort\": [\n" +
+                "    {\n" +
+                "      \""+sort.getField()+"\": {\n" +
+                "        \"order\": \""+sort.getOrder()+"\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n";
+    }
+
+    private String deepSort(Sort sort){
+        return "           ,\"order\": {\n" +
+                "                 \""+sort.getField()+"\": \""+sort.getOrder()+"\"\n" +
+                "           }\n";
     }
 
 
@@ -285,5 +283,6 @@ public class ConditionString {
         conditions.add(condition1);
         aggsGroup.setValues(conditions);
         ConditionString conditionString = new ConditionString(model);
+        System.out.println(conditionString.getAggsString(0));
     }
 }

@@ -14,7 +14,7 @@ public class UserDemo3DTO {
     @Group
     private Integer sex;
 
-    @Function(field = "age",value = Fun.AVG)
+    @Function(field = "age",value = Fun.AVG,order = "asc")
     private BigDecimal avgAge;
 
     public Integer getSex() {

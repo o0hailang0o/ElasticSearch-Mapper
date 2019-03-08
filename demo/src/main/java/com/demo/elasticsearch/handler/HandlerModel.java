@@ -25,6 +25,8 @@ public class HandlerModel {
                 model.setConditions(conditions);
                 Map<String,String> params = getParams(obj);
                 model.setParams(params);
+                Sort sort = getSort(clazz);
+                model.setSort(sort);
             }
         }
     }
@@ -36,14 +38,6 @@ public class HandlerModel {
             map.put(entry.getKey(),entry.getValue()+"");
         }
         return map;
-    }
-
-    private static String getType(Class clazz){
-        return ClassHandler.getType(clazz);
-    }
-
-    private static String getIndex(Class clazz){
-        return ClassHandler.getIndex(clazz);
     }
 
     /**
@@ -128,5 +122,52 @@ public class HandlerModel {
         return conditions;
     }
 
+    /**
+     * 普通设计
+     * @param clazz
+     */
+    private static Sort getSort(Class clazz){
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields){
+            if(field.isAnnotationPresent(com.demo.elasticsearch.annotations.Sort.class)) {
+                Sort sort = new Sort();
+                com.demo.elasticsearch.annotations.Sort sortAnno = field.getAnnotation(com.demo.elasticsearch.annotations.Sort.class);
+                if(!StringUtils.isEmpty(sortAnno.field())){
+                    sort.setField(sortAnno.field());
+                }else {
+                    sort.setField(field.getName());
+                }
+                sort.setOrder(sortAnno.order());
+                return sort;
+            }
+        }
+        return null;
+    }
 
+    /**
+     * 普通设计
+     * @param clazz
+     */
+    public static Sort getDeepSort(Class clazz){
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields){
+            if(field.isAnnotationPresent(Function.class)) {
+                Function function = field.getAnnotation(Function.class);
+                if(StringUtils.isEmpty(function.order())){
+                    continue;
+                }else {
+                   Sort sort = new Sort();
+                   if(StringUtils.isEmpty(function.field())){
+                        sort.setField(BeanHump.camelToUnderline(field.getName()));
+                   }else{
+                        sort.setField(function.value().getName()+"_"+function.field());
+                   }
+                   sort.setOrder(function.order());
+                   sort.setStatus(1);
+                    return sort;
+                }
+            }
+        }
+        return null;
+    }
 }

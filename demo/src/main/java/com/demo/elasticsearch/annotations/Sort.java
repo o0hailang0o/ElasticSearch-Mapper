@@ -1,21 +1,19 @@
 package com.demo.elasticsearch.annotations;
 
-import com.demo.elasticsearch.enums.Fun;
-
 import java.lang.annotation.*;
 
 /**
- * @author liujian on 2019/1/28.
+ * @author liujian on 2019/3/6.
+ *
+ * 这个注解只能用在入参  基本的排序操作
  */
 @Documented
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Function {
-
+public @interface Sort {
 
     String field() default "";
 
-    Fun value();
+    String order() default "asc";
 
-    String order() default "";
 }

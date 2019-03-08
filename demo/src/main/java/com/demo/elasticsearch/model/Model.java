@@ -9,7 +9,6 @@ import java.util.Set;
 public class Model {
 
         private String index;
-        private String type;
         /**
          * 前端可以根据组件 组件conditions（查询条件）
          *
@@ -19,7 +18,7 @@ public class Model {
          *
          * 前端组件 input radio 也是term
          *
-         * 前端组件 input checkbox 是或多选terms查询
+         * 前端组件 input checkbox 是或多选shouldTerm 查询
          *
          * 前端conditions提交格式 应该是 [{field1,term},{field2,phrase}]
          *
@@ -31,6 +30,7 @@ public class Model {
          *
          * 组件拼接只是理想化 如果出现 大于 不等于情况 可能就有问题
          */
+        private String type;
         private Set<Condition> conditions;
         /**
          * 分组查询 查询组数量 cardinality
@@ -51,6 +51,8 @@ public class Model {
         /**
          * 请求的具体参数
          */
+        private Sort sort;
+
         private Map<String,String> params;
 
         public String getIndex() {
@@ -85,6 +87,14 @@ public class Model {
             this.params = params;
         }
 
+        public Sort getSort() {
+            return sort;
+        }
+
+        public void setSort(Sort sort) {
+            this.sort = sort;
+        }
+
         public String getType() {
             return type;
         }
@@ -93,14 +103,16 @@ public class Model {
             this.type = type;
         }
 
-        @Override
-        public String toString() {
-            return "Model{" +
-                    "index='" + index + '\'' +
-                    ", conditions=" + conditions +
-                    ", aggs=" + aggs +
-                    ", params=" + params +
-                    '}';
-        }
+    @Override
+    public String toString() {
+        return "Model{" +
+                "index='" + index + '\'' +
+                ", type='" + type + '\'' +
+                ", conditions=" + conditions +
+                ", aggs=" + aggs +
+                ", sort=" + sort +
+                ", params=" + params +
+                '}';
+    }
 }
 
