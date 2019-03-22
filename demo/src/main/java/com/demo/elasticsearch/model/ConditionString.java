@@ -27,7 +27,7 @@ public class ConditionString {
             if(!CollectionUtils.isEmpty(conditions)){
                 for(Condition condition : conditions){
                     String field = condition.getField();
-                    if(model.getParams()!=null && StringUtils.isEmpty(model.getParams().get(field))){
+                    if(model.getParams()!=null && !StringUtils.isEmpty(model.getParams().get(field))){
                         filter+=getFilter(condition);
                     }
                 }
