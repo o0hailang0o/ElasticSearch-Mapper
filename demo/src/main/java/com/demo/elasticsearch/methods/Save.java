@@ -13,14 +13,16 @@ import org.springframework.util.StringUtils;
 public class Save<T> implements BaseMethod<T> {
 
     @Override
-    public Object handlerRest(Class<T> modelClass, EsUtils esUtils,Object[] args) {
+    public Object handlerRest(Class<T> modelClass, EsUtils esUtils, Object[] args) {
         JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(args[0]));
         String idString = ClassHandler.getIdFieldName(modelClass);
         String idValue = jsonObject.get(idString).toString();
         if(StringUtils.isEmpty(idValue)){
             throw new NotFoundIdException("not found primary,class must add Id annotation");
         }
-        String url = ClassHandler.getRestUrl(modelClass)+idValue;
+        String index = ClassHandler.getIndex(modelClass)+"-v"+esUtils.getEsVersion();
+        String type = ClassHandler.getType(modelClass);
+        String url =  "/"+index+"/"+type+"/"+idValue;
         jsonObject.remove(idString);
         String json = jsonObject.toJSONString();
         esUtils.put(url,json);

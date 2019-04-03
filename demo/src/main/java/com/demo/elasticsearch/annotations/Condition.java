@@ -13,4 +13,6 @@ public @interface Condition {
     String field() default "";
 
     String value() default "=";
+
+    String mapping() default "";
 }

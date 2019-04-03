@@ -14,5 +14,7 @@ public @interface Group {
 
     int order() default 0;
 
+    String key() default "";
+
     String condition() default "";
 }

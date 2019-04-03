@@ -15,8 +15,10 @@ import java.util.List;
 public class FindAll<T> implements BaseMethod<T>{
 
     @Override
-    public Object handlerRest(Class<T> modelClass, EsUtils esUtils,Object[] args) {
-        String url = ClassHandler.getRestUrl(modelClass)+"_search";
+    public Object handlerRest(Class<T> modelClass, EsUtils esUtils, Object[] args) {
+        String index = ClassHandler.getIndex(modelClass)+"-v"+esUtils.getEsVersion();
+        String type = ClassHandler.getType(modelClass);
+        String url =  "/"+index+"/"+type+"/_search";
         String json ="{\n" +
                 " \"size\":10000,\n"+
                 "  \"query\": {\n" +

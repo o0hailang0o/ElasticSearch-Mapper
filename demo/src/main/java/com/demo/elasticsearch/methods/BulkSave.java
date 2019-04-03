@@ -15,7 +15,7 @@ public class BulkSave<T> implements BaseMethod<T> {
 
     @Override
     public Object handlerRest(Class<T> modelClass, EsUtils esUtils, Object[] args) {
-        String index = ClassHandler.getIndex(modelClass);
+        String index = ClassHandler.getIndex(modelClass)+"-v"+esUtils.getEsVersion();
         String type = ClassHandler.getType(modelClass);
         String idString = ClassHandler.getIdFieldName(modelClass);
         String url = "_bulk";

@@ -8,6 +8,7 @@ import com.demo.elasticsearch.annotations.Group;
 import com.demo.elasticsearch.annotations.Id;
 import com.demo.elasticsearch.annotations.Result;
 import com.demo.elasticsearch.model.BeanHump;
+import com.demo.elasticsearch.model.PageData;
 import com.demo.elasticsearch.model.PageResult;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -33,7 +34,15 @@ public class HandlerResult {
         return new ArrayList<>();
     }
 
-    private static <T> void handlerJson(JSONObject jsonObject,Class<T> clazz){
+    public static <T> PageData<T> resultPageMap(PageResult pageResult, Class<T> clazz) {
+        PageData<T> pageData = new PageData<>();
+        List<T> resultList = resultMap(pageResult, clazz);
+        pageData.setDataList(resultList);
+        pageData.setCount(pageResult.getCount());
+        return pageData;
+    }
+
+    private static <T> void handlerJson(JSONObject jsonObject, Class<T> clazz){
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if(field.isAnnotationPresent(Id.class)){
@@ -48,12 +57,12 @@ public class HandlerResult {
         }
     }
 
-    private static void handlerId(Field field,JSONObject jsonObject){
+    private static void handlerId(Field field, JSONObject jsonObject){
         jsonObject.put(field.getName(),jsonObject.get("_id"));
         jsonObject.remove("_id");
     }
 
-    private static void handlerGroup(Field field,JSONObject jsonObject){
+    private static void handlerGroup(Field field, JSONObject jsonObject){
         Group group = field.getAnnotation(Group.class);
         String fieldName = field.getName();
         if(!StringUtils.isEmpty(group.field())){
@@ -64,7 +73,7 @@ public class HandlerResult {
         jsonObject.remove(BeanHump.underlineToCamel2(key));
     }
 
-    private static void handlerFunction(Field field,JSONObject jsonObject){
+    private static void handlerFunction(Field field, JSONObject jsonObject){
         Function function = field.getAnnotation(Function.class);
         String fieldName = field.getName();
         if(!StringUtils.isEmpty(function.field())){
@@ -75,7 +84,7 @@ public class HandlerResult {
         jsonObject.remove(BeanHump.underlineToCamel2(BeanHump.underlineToCamel2(key)));
     }
 
-    private static void handlerResult(Field field,JSONObject jsonObject){
+    private static void handlerResult(Field field, JSONObject jsonObject){
         Result result = field.getAnnotation(Result.class);
         jsonObject.put(field.getName(),jsonObject.get(result.value()));
         jsonObject.remove(result.value());

@@ -60,7 +60,7 @@ public class ResultHandler {
 
     private PageResult getAggResult(JSONObject result) {
         PageResult pageResult = new PageResult();
-        List<String> groups = model.getAggs().getGroups();
+        List<GroupBy> groups = model.getAggs().getGroups();
         int size = 0;
         if(groups != null){
             size = groups.size();
@@ -123,22 +123,27 @@ public class ResultHandler {
     private List<JSONObject> analyzeAnalyze1(JSONObject result){
         List<JSONObject> jsonObjects = new ArrayList<>();
         List<Condition> conditions = model.getAggs().getValues();
-        List<String> groups = model.getAggs().getGroups();
+        List<GroupBy> groups = model.getAggs().getGroups();
         JSONObject aggregations = result.getJSONObject("aggregations");
-        JSONArray buckets = aggregations.getJSONObject("group_"+groups.get(0)).getJSONArray("buckets");
+        GroupBy groupBy = groups.get(0);
+        String key = groupBy.getKey();
+        if(StringUtils.isEmpty(key)){
+            key = groupBy.getField();
+        }
+        JSONArray buckets = aggregations.getJSONObject("group_"+key).getJSONArray("buckets");
         for(int i=0;i<buckets.size();i++){
             JSONObject bucket = (JSONObject)buckets.get(i);
-            if(conditions!=null){
-                JSONObject jsonObject = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
+            if(!CollectionUtils.isEmpty(conditions)){
                 for(Condition condition : conditions){
                     String field  = condition.getField();
                     String value = condition.getValue();
                     jsonObject.put(BeanHump.underlineToCamel2(value+"_"+field),bucket.getJSONObject(value+"_"+field).getString("value"));
                 }
-                jsonObject.put(BeanHump.underlineToCamel2("group_"+groups.get(0)+"_value"),bucket.getString("key"));
-                jsonObject.put(BeanHump.underlineToCamel2("group_"+groups.get(0)+"_count"),bucket.getString("doc_count"));
-                jsonObjects.add(jsonObject);
             }
+            jsonObject.put(BeanHump.underlineToCamel2("group_"+key+"_value"),bucket.getString("key"));
+            jsonObject.put(BeanHump.underlineToCamel2("group_"+key+"_count"),bucket.getString("doc_count"));
+            jsonObjects.add(jsonObject);
         }
         return jsonObjects;
     }
@@ -146,30 +151,40 @@ public class ResultHandler {
     private List<JSONObject> analyzeAnalyze2(JSONObject result){
         List<JSONObject> jsonObjects = new ArrayList<>();
         List<Condition> conditions = model.getAggs().getValues();
-        List<String> groups = model.getAggs().getGroups();
+        List<GroupBy> groups = model.getAggs().getGroups();
+        GroupBy groupBy0 = groups.get(0);
+        String groupKey0 = groupBy0.getKey();
+        if(StringUtils.isEmpty(groupKey0)){
+            groupKey0 = groupBy0.getField();
+        }
+        GroupBy groupBy1 = groups.get(1);
+        String groupKey1 = groupBy1.getKey();
+        if(StringUtils.isEmpty(groupKey1)){
+            groupKey1 = groupBy1.getField();
+        }
         JSONObject aggregations = result.getJSONObject("aggregations");
-        JSONArray buckets1 = aggregations.getJSONObject("group_"+groups.get(0)).getJSONArray("buckets");
+        JSONArray buckets1 = aggregations.getJSONObject("group_"+groupKey0).getJSONArray("buckets");
         for(int i=0;i<buckets1.size();i++){
             JSONObject bucket1 = (JSONObject)buckets1.get(i);
             String key1 = bucket1.getString("key");
             String value1 = bucket1.getString("doc_count");
-            JSONArray buckets2 = bucket1.getJSONObject("group_"+groups.get(1)).getJSONArray("buckets");
+            JSONArray buckets2 = bucket1.getJSONObject("group_"+groupKey1).getJSONArray("buckets");
             for(int j=0;j<buckets2.size();j++){
                 JSONObject bucket2 = (JSONObject)buckets2.get(j);
                 JSONObject jsonObject2 = new JSONObject();
-                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groups.get(1)+"_value"),bucket2.getString("key"));
-                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groups.get(1)+"_count"),bucket2.getString("doc_count"));
-                if(conditions!=null){
+                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groupKey1+"_value"),bucket2.getString("key"));
+                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groupKey1+"_count"),bucket2.getString("doc_count"));
+                if(!CollectionUtils.isEmpty(conditions)){
                     for(Condition condition : conditions){
                         String field  = condition.getField();
                         String value = condition.getValue();
                         jsonObject2.put(BeanHump.underlineToCamel2(value+"_"+field),bucket2.getJSONObject(value+"_"+field).getString("value"));
                     }
                 }
-                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groups.get(0)+"_value"),key1);
-                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groups.get(0)+"_count"),value1);
-                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groups.get(1)+"_value"),bucket2.getString("key"));
-                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groups.get(1)+"_count"),bucket2.getString("doc_count"));
+                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groupBy0+"_value"),key1);
+                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groupBy0+"_count"),value1);
+                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groupBy1+"_value"),bucket2.getString("key"));
+                jsonObject2.put(BeanHump.underlineToCamel2("group_"+groupBy1+"_count"),bucket2.getString("doc_count"));
                 jsonObjects.add(jsonObject2);
             }
 
@@ -180,35 +195,50 @@ public class ResultHandler {
     private List<JSONObject> analyzeAnalyze3(JSONObject result){
         List<JSONObject> jsonObjects = new ArrayList<>();
         List<Condition> conditions = model.getAggs().getValues();
-        List<String> groups = model.getAggs().getGroups();
+        List<GroupBy> groups = model.getAggs().getGroups();
+        GroupBy groupBy0 = groups.get(0);
+        String groupKey0 = groupBy0.getKey();
+        if(StringUtils.isEmpty(groupKey0)){
+            groupKey0 = groupBy0.getField();
+        }
+        GroupBy groupBy1 = groups.get(1);
+        String groupKey1 = groupBy1.getKey();
+        if(StringUtils.isEmpty(groupKey1)){
+            groupKey1 = groupBy1.getField();
+        }
+        GroupBy groupBy2 = groups.get(2);
+        String groupKey2 = groupBy2.getKey();
+        if(StringUtils.isEmpty(groupKey2)){
+            groupKey2 = groupBy2.getField();
+        }
         JSONObject aggregations = result.getJSONObject("aggregations");
-        JSONArray buckets1 = aggregations.getJSONObject("group_"+groups.get(0)).getJSONArray("buckets");
+        JSONArray buckets1 = aggregations.getJSONObject("group_"+groupKey0).getJSONArray("buckets");
         for(int i=0;i<buckets1.size();i++){
             JSONObject bucket1 = (JSONObject)buckets1.get(i);
             String key1 = bucket1.getString("key");
             String value1 = bucket1.getString("doc_count");
-            JSONArray buckets2 = bucket1.getJSONObject("group_"+groups.get(1)).getJSONArray("buckets");
+            JSONArray buckets2 = bucket1.getJSONObject("group_"+groupKey1).getJSONArray("buckets");
             for(int j=0;j<buckets2.size();j++){
                 JSONObject bucket2 = (JSONObject)buckets2.get(j);
                 String key2 = bucket2.getString("key");
                 String value2 = bucket2.getString("doc_count");
-                JSONArray buckets3 = bucket2.getJSONObject("group_"+groups.get(2)).getJSONArray("buckets");
+                JSONArray buckets3 = bucket2.getJSONObject("group_"+groupKey2).getJSONArray("buckets");
                 for(int x=0;x<buckets3.size();x++){
                     JSONObject jsonObject3 = new JSONObject();
                     JSONObject bucket3 = (JSONObject)buckets3.get(x);
-                    if(conditions!=null){
+                    if(!CollectionUtils.isEmpty(conditions)){
                         for(Condition condition : conditions){
                             String field  = condition.getField();
                             String value = condition.getValue();
                             jsonObject3.put(BeanHump.underlineToCamel2(value+"_"+field),bucket3.getJSONObject(value+"_"+field).getString("value"));
                         }
                      }
-                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groups.get(0)+"_value"),key1);
-                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groups.get(0)+"_count"),value1);
-                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groups.get(1)+"_value"),key2);
-                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groups.get(1)+"_count"),value2);
-                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groups.get(2)+"_value"),bucket3.getString("key"));
-                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groups.get(2)+"_count"),bucket3.getString("doc_count"));
+                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groupKey0+"_value"),key1);
+                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groupKey0+"_count"),value1);
+                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groupKey1+"_value"),key2);
+                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groupKey1+"_count"),value2);
+                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groupKey1+"_value"),bucket3.getString("key"));
+                    jsonObject3.put(BeanHump.underlineToCamel2("group_"+groupKey1+"_count"),bucket3.getString("doc_count"));
                     jsonObjects.add(jsonObject3);
                 }
             }

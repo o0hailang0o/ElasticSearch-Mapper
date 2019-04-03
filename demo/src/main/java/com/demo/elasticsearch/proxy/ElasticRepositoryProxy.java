@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public class ElasticRepositoryProxy<T> implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args){
+    public Object invoke(Object proxy, Method method, Object[] args)throws Exception{
         if(method.getDeclaringClass().equals(ElasticSearchBaseRepository.class)){
             return getMethod(method,args);
         }
@@ -65,7 +64,7 @@ public class ElasticRepositoryProxy<T> implements InvocationHandler {
     }
 
 
-    private Object getCommonMethod(Method method,Object[] args){
+    private Object getCommonMethod(Method method,Object[] args)throws Exception{
         Model model = getIndexAndType();
         Type type = method.getGenericReturnType();
         if(type instanceof ParameterizedType){
@@ -73,7 +72,14 @@ public class ElasticRepositoryProxy<T> implements InvocationHandler {
             Type[] types = parameterizedType.getActualTypeArguments();
             HandlerModel.createModel(model,args);
             if (parameterizedType.equals(PageResult.class)) {
+                //没有序列化
                 return search.search(model);
+            }else if(((ParameterizedType) type).getRawType().equals(PageData.class)){
+                //分页
+                HandlerModel.createPageModel(method,model,args);
+                PageResult pageResult =  search.search(model);
+                Class<?> resultClass = (Class)types[0];
+                return HandlerResult.resultPageMap(pageResult,resultClass);
             } else if (types.length==1) {
                 //返回List情况下 聚合查询 以及 排序返回结果 也会影响到查询结果
                 Class<?> resultClass = (Class)types[0];
@@ -91,9 +97,9 @@ public class ElasticRepositoryProxy<T> implements InvocationHandler {
         return null;
     }
 
-    private List<?> getResult( Class<?> resultClass, Model model){
-        AggsGroup aggsGroup = HandlerModel.getAggsGroup(resultClass);
-        model.setAggs(aggsGroup);
+    private List<?> getResult( Class<?> resultClass, Model model)throws Exception{
+        HandlerModel.getAggsGroup(model,resultClass,1);
+        HandlerModel.getFun(model,resultClass);
         //深度排序问题
         Sort sort = HandlerModel.getDeepSort(resultClass);
         model.setSort(sort);

@@ -6,7 +6,7 @@ import com.demo.elasticsearch.annotations.Id;
 /**
  * @author liujian on 2018/12/29.
  */
-@Document(index = "test-v1",type = "user")
+@Document(index = "test",type = "user")
 public class User {
 
     @Id

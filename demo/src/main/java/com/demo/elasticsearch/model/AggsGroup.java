@@ -7,15 +7,15 @@ import java.util.List;
  */
 public class AggsGroup {
 
-    private List<String> groups;
+    private List<GroupBy> groups;
 
     private List<Condition> values;
 
-    public List<String> getGroups() {
+    public List<GroupBy> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<String> groups) {
+    public void setGroups(List<GroupBy> groups) {
         this.groups = groups;
     }
 

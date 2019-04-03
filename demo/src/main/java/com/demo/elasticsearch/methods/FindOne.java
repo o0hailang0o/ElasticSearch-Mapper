@@ -12,7 +12,9 @@ public class FindOne<T> implements BaseMethod<T> {
 
     @Override
     public Object handlerRest(Class<T> modelClass, EsUtils esUtils, Object[] args) {
-        String url = ClassHandler.getRestUrl(modelClass)+args[0];
+        String index = ClassHandler.getIndex(modelClass)+"-v"+esUtils.getEsVersion();
+        String type = ClassHandler.getType(modelClass);
+        String url =  "/"+index+"/"+type+"/"+args[0];
         JSONObject result = esUtils.get(url);
         JSONObject source= result.getJSONObject("_source");
         String idString = ClassHandler.getIdFieldName(modelClass);

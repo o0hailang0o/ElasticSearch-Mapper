@@ -11,6 +11,8 @@ public class Condition {
 
     private String value;
 
+    private String mapping;
+
     public String getField() {
         return field;
     }
@@ -25,6 +27,14 @@ public class Condition {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getMapping() {
+        return mapping;
+    }
+
+    public void setMapping(String mapping) {
+        this.mapping = mapping;
     }
 
     @Override
@@ -49,6 +59,7 @@ public class Condition {
         return "Condition{" +
                 "field='" + field + '\'' +
                 ", value='" + value + '\'' +
+                ", mapping='" + mapping + '\'' +
                 '}';
     }
 }

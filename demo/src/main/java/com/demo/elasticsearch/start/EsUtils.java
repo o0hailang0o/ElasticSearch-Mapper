@@ -10,6 +10,7 @@ import org.elasticsearch.client.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ public class EsUtils {
 
     @Autowired
     private RestClient restClient;
+    @Value("${es.version}")
+    private String esVersion;
 
     private JSONObject rest(String url, String json, String type) {
         try {
@@ -42,6 +45,13 @@ public class EsUtils {
             logger.error("\n"+type.toUpperCase()+"  "+url+"\n"+json);
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public String getEsVersion() {
+        if(esVersion == null){
+            esVersion = "1";
+        }
+        return esVersion;
     }
 
     public JSONObject put(String url, String json){

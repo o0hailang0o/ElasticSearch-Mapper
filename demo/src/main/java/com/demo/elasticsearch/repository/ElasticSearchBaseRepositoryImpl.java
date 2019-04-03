@@ -21,7 +21,7 @@ import java.util.List;
  * @author liujian on 2018/12/28.
  */
 @Repository
-public class ElasticSearchBaseRepositoryImpl<T> implements ElasticSearchBaseRepository<T>{
+public class ElasticSearchBaseRepositoryImpl<T> implements ElasticSearchBaseRepository<T> {
 
     @Autowired
     private EsUtils esUtils;

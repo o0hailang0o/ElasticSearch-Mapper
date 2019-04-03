@@ -3,7 +3,10 @@ package com.demo.elasticsearch.model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author liujian on 2019/1/4.
@@ -27,7 +30,11 @@ public class ConditionString {
             if(!CollectionUtils.isEmpty(conditions)){
                 for(Condition condition : conditions){
                     String field = condition.getField();
-                    if(model.getParams()!=null && !StringUtils.isEmpty(model.getParams().get(field))){
+                    String mapping = condition.getMapping();
+                    if(StringUtils.isEmpty(mapping)){
+                        mapping = field;
+                    }
+                    if(model.getParams()!=null && !StringUtils.isEmpty(model.getParams().get(mapping))){
                         filter+=getFilter(condition);
                     }
                 }
@@ -42,27 +49,31 @@ public class ConditionString {
     private String getFilter(Condition condition){
         String value = condition.getValue();
         Map<String, String> params = model.getParams();
+        String mapping = condition.getMapping();
+        if(StringUtils.isEmpty(mapping)){
+            mapping = condition.getField();
+        }
         switch(value){
             case "=":
-                return  termString(condition.getField(),params.get(condition.getField()));
+                return  termString(condition.getField(),params.get(mapping));
             case "like":
-                return  matchPhraseString(condition.getField(),params.get(condition.getField()));
+                return  matchPhraseString(condition.getField(),params.get(mapping));
             case "match":
-                return  matchString(condition.getField(),params.get(condition.getField()));
+                return  matchString(condition.getField(),params.get(mapping));
             case "in":
-                return  termsString(condition.getField(),params.get(condition.getField()).split(","));
+                return  termsString(condition.getField(),params.get(mapping).split(","));
             case "!=":
-                return  boolMustNotString(condition.getField(),params.get(condition.getField()));
+                return  boolMustNotString(condition.getField(),params.get(mapping));
             case ">":
-                return rangeString(condition.getField(),params.get(condition.getField()),"gt");
+                return rangeString(condition.getField(),params.get(mapping),"gt");
             case ">=":
-                return rangeString(condition.getField(),params.get(condition.getField()),"gte");
+                return rangeString(condition.getField(),params.get(mapping),"gte");
             case "<":
-                return rangeString(condition.getField(),params.get(condition.getField()),"lt");
+                return rangeString(condition.getField(),params.get(mapping),"lt");
             case "<=":
-                return rangeString(condition.getField(),params.get(condition.getField()),"lte");
+                return rangeString(condition.getField(),params.get(mapping),"lte");
             default:
-                return  termString(condition.getField(),params.get(condition.getField()));
+                return  termString(condition.getField(),params.get(mapping));
         }
     }
 
@@ -79,7 +90,7 @@ public class ConditionString {
             }
             Integer limit = StringUtils.isEmpty(params.get("limit"))?10000:Integer.parseInt(params.get("limit"));
             Integer page =  StringUtils.isEmpty(params.get("page"))?1:Integer.parseInt(params.get("page"));
-            from = (page-1)*page;
+            from = (page-1)*limit;
             size = limit;
             if(model.getAggs()!=null&&!(CollectionUtils.isEmpty(model.getAggs().getGroups())&& CollectionUtils.isEmpty(model.getAggs().getValues()))){
                 size = 0;
@@ -113,12 +124,17 @@ public class ConditionString {
     private String getAggsString(int i){
         String aggs = "";
         AggsGroup aggsGroup = model.getAggs();
-        List<String> groups = aggsGroup.getGroups();
+        List<GroupBy> groups = aggsGroup.getGroups();
         if(groups!=null&&!groups.isEmpty()){
+             GroupBy groupBy = groups.get(i);
+             String key = groupBy.getField();
+             if(!StringUtils.isEmpty(groupBy.getKey())){
+                 key = groupBy.getKey();
+             }
              aggs+=",\"aggs\": {\n" +
-                    "      \"group_"+groups.get(i)+"\":{\n" +
+                    "      \"group_"+key+"\":{\n" +
                     "        \"terms\": {\n" +
-                    "          \"field\": \""+groups.get(i)+"\",\n" +
+                    "          \"field\": \""+groupBy.getField()+"\",\n" +
                     "          \"execution_hint\": \"map\",\n"+
                     "          \"size\": 10000\n";
                     if(i==groups.size()-1){
@@ -262,27 +278,4 @@ public class ConditionString {
                 "           }\n";
     }
 
-
-    public static void main(String[] args){
-        Model model = new Model();
-        AggsGroup aggsGroup = new AggsGroup();
-        model.setAggs(aggsGroup);
-        List<String> groups = new ArrayList<>();
-        groups.add("cityCode");
-        groups.add("matchClientId");
-        groups.add("tradingCompany");
-        aggsGroup.setGroups(groups);
-        List<Condition> conditions = new ArrayList<>();
-        Condition condition = new Condition();
-        condition.setField("price");
-        condition.setValue("avg");
-        Condition condition1 = new Condition();
-        condition1.setField("id");
-        condition1.setValue("count");
-        conditions.add(condition);
-        conditions.add(condition1);
-        aggsGroup.setValues(conditions);
-        ConditionString conditionString = new ConditionString(model);
-        System.out.println(conditionString.getAggsString(0));
-    }
 }

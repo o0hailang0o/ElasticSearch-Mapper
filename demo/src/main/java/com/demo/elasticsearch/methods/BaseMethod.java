@@ -13,6 +13,6 @@ public interface BaseMethod<T> {
      * @param esUtils
      * @return
      */
-     Object handlerRest(Class<T> modelClass,EsUtils esUtils,Object[] args);
+     Object handlerRest(Class<T> modelClass, EsUtils esUtils, Object[] args);
 
 }
