@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author liujian on 2018/11/23.
  */
-@Document(index = "sca-client",type = "sca-client")
+@Document(index = "f-sca-client",type = "f-sca-client")
 public class ScaClient{
 
     @Id
@@ -30,23 +30,23 @@ public class ScaClient{
 
     private String bussinessScope;
 
-    private Long provinceCode;
+    private Long provinceId;
 
     private String provinceName;
 
-    private Long cityCode;
+    private Long cityId;
 
     private String cityName;
 
-    private Long districtCode;
+    private Long districtId;
 
     private String districtName;
 
-    private Long townshipCode;
+    private Long townshipId;
 
     private String townshipName;
 
-    private Long villageCode;
+    private Long villageId;
 
     private String villageName;
 
@@ -150,12 +150,12 @@ public class ScaClient{
         this.bussinessScope = bussinessScope;
     }
 
-    public Long getProvinceCode() {
-        return provinceCode;
+    public Long getProvinceId() {
+        return provinceId;
     }
 
-    public void setProvinceCode(Long provinceCode) {
-        this.provinceCode = provinceCode;
+    public void setProvinceId(Long provinceId) {
+        this.provinceId = provinceId;
     }
 
     public String getProvinceName() {
@@ -166,12 +166,12 @@ public class ScaClient{
         this.provinceName = provinceName;
     }
 
-    public Long getCityCode() {
-        return cityCode;
+    public Long getCityId() {
+        return cityId;
     }
 
-    public void setCityCode(Long cityCode) {
-        this.cityCode = cityCode;
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
     }
 
     public String getCityName() {
@@ -182,12 +182,12 @@ public class ScaClient{
         this.cityName = cityName;
     }
 
-    public Long getDistrictCode() {
-        return districtCode;
+    public Long getDistrictId() {
+        return districtId;
     }
 
-    public void setDistrictCode(Long districtCode) {
-        this.districtCode = districtCode;
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
     }
 
     public String getDistrictName() {
@@ -198,12 +198,12 @@ public class ScaClient{
         this.districtName = districtName;
     }
 
-    public Long getTownshipCode() {
-        return townshipCode;
+    public Long getTownshipId() {
+        return townshipId;
     }
 
-    public void setTownshipCode(Long townshipCode) {
-        this.townshipCode = townshipCode;
+    public void setTownshipId(Long townshipId) {
+        this.townshipId = townshipId;
     }
 
     public String getTownshipName() {
@@ -214,12 +214,12 @@ public class ScaClient{
         this.townshipName = townshipName;
     }
 
-    public Long getVillageCode() {
-        return villageCode;
+    public Long getVillageId() {
+        return villageId;
     }
 
-    public void setVillageCode(Long villageCode) {
-        this.villageCode = villageCode;
+    public void setVillageId(Long villageId) {
+        this.villageId = villageId;
     }
 
     public String getVillageName() {
@@ -354,15 +354,15 @@ public class ScaClient{
                 ", phone='" + phone + '\'' +
                 ", phoneMore='" + phoneMore + '\'' +
                 ", bussinessScope='" + bussinessScope + '\'' +
-                ", provinceCode=" + provinceCode +
+                ", provinceId=" + provinceId +
                 ", provinceName='" + provinceName + '\'' +
-                ", cityCode=" + cityCode +
+                ", cityId=" + cityId +
                 ", cityName='" + cityName + '\'' +
-                ", districtCode=" + districtCode +
+                ", districtId=" + districtId +
                 ", districtName='" + districtName + '\'' +
-                ", townshipCode=" + townshipCode +
+                ", townshipId=" + townshipId +
                 ", townshipName='" + townshipName + '\'' +
-                ", villageCode=" + villageCode +
+                ", villageId=" + villageId +
                 ", villageName='" + villageName + '\'' +
                 ", longitude='" + longitude + '\'' +
                 ", latitude='" + latitude + '\'' +
