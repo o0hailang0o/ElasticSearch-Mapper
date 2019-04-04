@@ -1,9 +1,7 @@
 package com.demo;
 
-import com.demo.dto.UserDemo1DTO;
-import com.demo.dto.UserDemo2DTO;
-import com.demo.dto.UserDemo3DTO;
-import com.demo.dto.UserDemo8DTO;
+import com.demo.dto.*;
+import com.demo.elasticsearch.model.PageData;
 import com.demo.model.User;
 import com.demo.repository.UserRepository;
 import org.junit.Test;
@@ -153,5 +151,24 @@ public class DemoApplicationTests {
 	public void demo8(){
 		UserDemo8DTO userDemo8DTO = userRepository.avgAndTotalAge();
 		System.out.println(userDemo8DTO);
+	}
+
+	//计算20-30岁的有哪些人
+	@Test
+	public void demo9(){
+		UserDemo9DTO userDemo9DTO = new UserDemo9DTO();
+		userDemo9DTO.setMinAge(20);
+		userDemo9DTO.setMaxAge(30);
+		List<User> users = userRepository.findUsersByAgeRegion(userDemo9DTO);
+		System.out.println(users);
+	}
+
+	//搜索用户分页
+	@Test
+	public void demo10(){
+		UserDemo10DTO userDemo10DTO = new UserDemo10DTO();
+		userDemo10DTO.setSex(2);
+		PageData<User> users = userRepository.searchUser(userDemo10DTO,1,3);
+		System.out.println(users);
 	}
 }
