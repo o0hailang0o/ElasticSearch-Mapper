@@ -62,7 +62,7 @@ XXX当中 加上Document注解表明 type 以及 index  注意index是有版本�
 
 分页计算
 接口方法参数 @Page @Limit 代表分页
-PageData是分页返回值
+PageData是分页返回值 只有接口返回值PageData分页注解才能生效
 
 
 
